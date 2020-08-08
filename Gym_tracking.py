@@ -4,33 +4,41 @@ from collections import deque
 
 initial_points = []
 
+## callback function for getting the points to track from the user
 def get_intial_points(event, x, y, flags, param):
     global initial_points
     if event == cv2.EVENT_LBUTTONDOWN:
         initial_points.append([x, y])   
-        cv2.circle(frame1, (x, y), 5, [255,255,255], -1)
+        
+        # show a white circle on the frame to display the point which will be tracked
+        cv2.circle(frame1, (x, y), 5, [255,255,255], -1) 
         cv2.imshow('Enter points to track', frame1)        
 
 
-cap = cv2.VideoCapture('/home/jebastin/Desktop/Gym_3.mp4')
+cap = cv2.VideoCapture('/path/to/video.mp4')
 
 ret, frame1 = cap.read()
 prev_gray = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
 
+# Get points to track from the user
 cv2.imshow('Enter points to track', frame1) 
 cv2.setMouseCallback('Enter points to track', get_intial_points)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-prev_points = np.array(initial_points).reshape(-1, 1, 2).astype(np.float32)
-lk_params = dict(winSize = (15,15), maxLevel = 2, criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
-
+# Save the tracked video as output.mp4
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 fps = round(cap.get(cv2.CAP_PROP_FPS))
 out = cv2.VideoWriter('output.mp4', fourcc, fps, (frame1.shape[1], frame1.shape[0]))
 
+
+prev_points = np.array(initial_points).reshape(-1, 1, 2).astype(np.float32)
 points = deque([initial_points], maxlen=40)
-colors = [(0,0,255), (0,255,0)]
+colors = [(0,0,255), (0,255,0), (0,255,255), (255,0,0)] # some random colors
+
+# parameters for 
+lk_params = dict(winSize = (15,15), maxLevel = 2, criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
+
 
 while True:
     ret, frame = cap.read()
