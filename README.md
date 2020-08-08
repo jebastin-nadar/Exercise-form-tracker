@@ -1,2 +1,4 @@
-# Gym-form-tracker
-Check your form while lifting wieghts using OpenCV
+# Exercise form tracker using OpenCV
+
+Check your form while lifting weights using OpenCV
+
