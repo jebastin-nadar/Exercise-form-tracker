@@ -31,14 +31,12 @@ fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 fps = round(cap.get(cv2.CAP_PROP_FPS))
 out = cv2.VideoWriter('output.mp4', fourcc, fps, (frame1.shape[1], frame1.shape[0]))
 
-
 prev_points = np.array(initial_points).reshape(-1, 1, 2).astype(np.float32)
-points = deque([initial_points], maxlen=40)
+points = deque([initial_points], maxlen=40) # change maxlen to change the length of the tail
 colors = [(0,0,255), (0,255,0), (0,255,255), (255,0,0)] # some random colors
 
-# parameters for 
+# parameters for lucas-kanade optical flow algorithm
 lk_params = dict(winSize = (15,15), maxLevel = 2, criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
-
 
 while True:
     ret, frame = cap.read()
@@ -46,7 +44,7 @@ while True:
         break
     
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    next_points, status, error = cv2.calcOpticalFlowPyrLK(prev_gray, gray, prev_points, None, **lk_params)
+    next_points, status, error = cv2.calcOpticalFlowPyrLK(prev_gray, gray, prev_points, None, **lk_params) # calculate the points
     
     good_new = next_points[status == 1]
     points.append(good_new.tolist())
@@ -61,7 +59,7 @@ while True:
     out.write(frame)
     cv2.imshow("Tracked Video", frame)
     
-    # Updates previous frame
+    # Updates previous frame and points
     prev_gray = gray.copy()
     prev_points = good_new.reshape(-1, 1, 2)
     
